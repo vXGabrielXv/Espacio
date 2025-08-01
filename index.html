@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Desarrollo Web Espacial - CTP de Aserrí</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sistema Solar de Fondo */
+        .solar-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .orbit-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .orbit-1 { width: 400px; height: 400px; animation: rotate-orbit 25s linear infinite; }
+        .orbit-2 { width: 600px; height: 600px; animation: rotate-orbit 45s linear infinite; }
+        .orbit-3 { width: 800px; height: 800px; animation: rotate-orbit 70s linear infinite; }
+        .orbit-4 { width: 1000px; height: 1000px; animation: rotate-orbit 100s linear infinite; }
+
+        @keyframes rotate-orbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Planetas */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .planet-1 {
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle at 30% 30%, #8c7853, #5d4e37);
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(140, 120, 83, 0.4);
+        }
+
+        .planet-2 {
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 25% 25%, #ffc649, #ff8f00, #e65100);
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), 0 0 12px rgba(255, 198, 73, 0.5);
+        }
+
+        .planet-3 {
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 30% 30%, #42a5f5, #1976d2, #0d47a1);
+            position: relative;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3), 0 0 15px rgba(66, 165, 245, 0.6);
+        }
+
+        .planet-3::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 30%, rgba(76, 175, 80, 0.8), transparent 60%),
+                        radial-gradient(circle at 60% 70%, rgba(76, 175, 80, 0.6), transparent 40%);
+        }
+
+        .planet-4 {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #f44336, #d32f2f, #b71c1c);
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(244, 67, 54, 0.5);
+        }
+
+        /* Sol central */
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #fdcb6e, #e17055, #d63031);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(253, 203, 110, 0.8), 0 0 60px rgba(253, 203, 110, 0.4);
+            animation: sun-pulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes sun-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Estrellas de fondo */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Cohete decorativo */
+        .rocket {
+            position: fixed;
+            width: 60px;
+            height: 80px;
+            z-index: 50;
+            animation: rocket-orbit 40s linear infinite;
+            transform-origin: 50vw 50vh;
+            pointer-events: none;
+        }
+
+        .rocket-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #ff6b6b, #ee5a24);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.4));
+        }
+
+        .rocket-flame {
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(180deg, #ff3838, #ff6b35, #ffa726, #ffeb3b);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flame-flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flame-flicker {
+            0% { transform: translateX(-50%) scaleY(1) scaleX(1); }
+            100% { transform: translateX(-50%) scaleY(1.2) scaleX(0.9); }
+        }
+
+        @keyframes rocket-orbit {
+            0% { transform: rotate(0deg) translateX(500px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(500px) rotate(-360deg); }
+        }
+
+        /* Header mejorado */
+        header {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #14084f, #1a1a2e, #0b0f2a);
+            position: relative;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin: 0 auto 1rem;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .logo img {
+              margin-right: 7px;
+              width: 250px;
+            height: 150px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ffff, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: glow-text 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-text {
+            0% { filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.8)); }
+        }
+
+        .subtitulo {
+            font-size: 1.4rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Secciones mejoradas */
+        main {
+            position: relative;
+            z-index: 100;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Cards mejoradas */
+        .contenedor-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+            box-shadow: 0 15px 35px rgba(0, 255, 255, 0.3);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00ffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        /* Sección de Juegos Mejorada */
+        .game-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 107, 107, 0.05));
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .game-section h2 {
+            color: #00ffff;
+            margin-bottom: 2rem;
+        }
+
+        /* Menú de Juegos */
+        .game-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .game-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .game-card.active {
+            border-color: #00ffff;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-card h3 {
+            color: #00ffff;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .game-card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Contenedor Principal del Juego */
+        .game-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .game-header h3 {
+            color: #ffd700;
+            margin: 0;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .game-stats span {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Controles */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .control-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .control-btn:not(.primary) {
+            background: linear-gradient(45deg, #666, #888);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:not(.primary):hover {
+            background: linear-gradient(45deg, #777, #999);
+            transform: translateY(-2px);
+        }
+
+        /* Canvas Principal */
+        #gameCanvas {
+            background: linear-gradient(45deg, #000428, #004e92);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            margin: 1rem auto;
+            display: block;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Área del Juego de Estrellas */
+        .star-game-area {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            background: linear-gradient(45deg, #1a1a40, #2a2a60);
+            margin: 1rem auto;
+            border: 3px solid #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .estrella {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            animation: star-pulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes star-pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        /* Constructor HTML */
+        .builder-game-area {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .html-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .available-tags h4, .build-area h4, .target-structure h4 {
+            color: #00ffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .tag-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .html-tag {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: grab;
+            user-select: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .html-tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+        }
+
+        .html-tag:active {
+            cursor: grabbing;
+        }
+
+        .drop-zone {
+            min-height: 200px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px dashed #00ff00;
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ffff;
+        }
+
+        .target-structure {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #targetStructure {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            min-height: 150px;
+        }
+
+        /* Carrera CSS */
+        .css-race-area {
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .race-track {
+            background: linear-gradient(90deg, #1a1a40, #2a2a60);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .css-challenge {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .css-challenge h4 {
+            color: #00ffff;
+            margin-bottom: 1rem;
+        }
+
+        .css-question {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            margin-bottom: 1rem;
+            border-left: 4px solid #00ffff;
+        }
+
+        #cssInput {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #cssInput:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        #cssSubmit {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #cssSubmit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .race-progress {
+            position: relative;
+            height: 80px;
+            background: linear-gradient(90deg, #000428, #004e92);
+            border-radius: 40px;
+            border: 2px solid #00ffff;
+            overflow: hidden;
+        }
+
+        .player-ship {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            transition: left 0.5s ease;
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+        }
+
+        /* Debug Area */
+        .debug-area {
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+
+        .code-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-panel h4 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #codeToDebug {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1.5rem;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #ff6b6b;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .debug-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .debug-option {
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .debug-option:hover {
+            border-color: rgba(255, 107, 107, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .debug-option.correct {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 0, 0.1));
+            border-color: #00ff00;
+        }
+
+        .debug-option.incorrect {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.2), rgba(255, 0, 0, 0.1));
+            border-color: #ff0000;
+        }
+
+        /* Modal de Instrucciones */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h3 {
+            color: #00ffff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        /* Galería mejorada */
+        .galeria {
+            text-align: center;
+        }
+
+        .contenedor-proyectos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .proyecto {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .proyecto:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+
+        .proyecto img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .proyecto:hover img {
+            transform: scale(1.05);
+        }
+
+        .proyecto h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .qr {
+            width: 150px;
+            height: 150px;
+            margin-top: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .qr:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Footer mejorado */
+        footer {
+            background: linear-gradient(135deg, #14084f, #1a1a2e);
+            text-align: center;
+            padding: 2rem;
+            color: #aaa;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Tooltips mejorados */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background: linear-gradient(45deg, #000428, #004e92);
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 0.9rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .section h2 { font-size: 2rem; }
+            .contenedor-cards { grid-template-columns: 1fr; }
+            .contenedor-proyectos { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; align-items: center; }
+            .rocket { display: none; }
+            .orbit-1, .orbit-2, .orbit-3, .orbit-4 { display: none; }
+            .html-workspace { grid-template-columns: 1fr; }
+            .game-menu { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
+
+        /* Efectos de entrada */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Efectos de partículas para juegos */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 2s ease-out forwards;
+        }
+
+        @keyframes particle-float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0);
+            }
+        }
+
+        .correct-answer {
+            background: linear-gradient(45deg, #00ff00, #4CAF50) !important;
+            animation: correct-flash 0.5s ease;
+        }
+
+        .wrong-answer {
+            background: linear-gradient(45deg, #ff0000, #f44336) !important;
+            animation: wrong-shake 0.5s ease;
+        }
+
+        @keyframes correct-flash {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes wrong-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Estrellas de fondo -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Sistema Solar de Fondo -->
+    <div class="solar-system">
+        <div class="sun"></div>
+        <div class="orbit orbit-1">
+            <div class="planet planet-1"></div>
+        </div>
+        <div class="orbit orbit-2">
+            <div class="planet planet-2"></div>
+        </div>
+        <div class="orbit orbit-3">
+            <div class="planet planet-3"></div>
+        </div>
+        <div class="orbit orbit-4">
+            <div class="planet planet-4"></div>
+        </div>
+    </div>
+    
+    <!-- Cohete decorativo -->
+    <div class="rocket">
+        <div class="rocket-body">
+            <div class="rocket-flame"></div>
+        </div>
+    </div>
+
+    <header class="fade-in">
+        <div class="logo"><img src="/logo.png" alt=""></div>
+        <h1>¡Explora el universo del Desarrollo Web!</h1>
+        <p class="subtitulo">Feria de Especialidades Técnicas 2025</p>
+    </header>
+
+    <main>
+        <section class="section galaxia fade-in">
+            <h2>¿Qué aprenderás en nuestra especialidad?</h2>
+            <div class="contenedor-cards">
+                <div class="card tooltip">
+                    <h3>HTML5</h3>
+                    <p>Construye la estructura de páginas web modernas y accesibles.</p>
+                    <span class="tooltip-text">Componente estructural: HTML define la estructura semántica de la interfaz web.</span>
+                </div>
+
+                <div class="card tooltip">
+                    <h3>CSS3</h3>
+                    <p>Estiliza con efectos visuales sorprendentes y animaciones galácticas.</p>
+                    <span class="tooltip-text">Lenguaje de presentación: CSS controla el diseño visual y las animaciones.</span>
+                </div>
+
+                <div class="card tooltip">
+                    <h3>JavaScript</h3>
+                    <p>Agrega interacción y dinamismo galáctico a tus proyectos.</p>
+                    <span class="tooltip-text">Lenguaje de comportamiento: JavaScript añade interactividad y lógica a las páginas web.</span>
+                </div>
+
+                <div class="card tooltip">
+                    <h3>Diseño Responsivo</h3>
+                    <p>Adapta tus sitios a cualquier planeta... o dispositivo móvil.</p>
+                    <span class="tooltip-text">Técnica de diseño: Permite que los sitios web se adapten a diferentes tamaños de pantalla.</span>
+                </div>
+
+                <div class="card tooltip">
+                    <h3>Frameworks Modernos</h3>
+                    <p>Domina las herramientas más avanzadas del desarrollo web actual.</p>
+                    <span class="tooltip-text">Herramientas avanzadas: React, Vue, Angular y otros frameworks para desarrollo eficiente.</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="game-section fade-in">
+            <h2>🚀 Centro de Comando Espacial - Juegos Interactivos</h2>
+            <p>Entrena como un verdadero desarrollador espacial con nuestros simuladores interactivos. Cada misión te enseñará habilidades esenciales del desarrollo web.</p>
+            
+            <!-- Menú de Juegos -->
+            <div class="game-menu">
+                <div class="game-card active" data-game="codeHunter">
+                    <div class="game-icon">🎯</div>
+                    <h3>Cazador de Códigos</h3>
+                    <p>Atrapa fragmentos de código válido mientras evitas los errores</p>
+                </div>
+                <div class="game-card" data-game="starCollector">
+                    <div class="game-icon">⭐</div>
+                    <h3>Recolector Estelar</h3>
+                    <p>Recolecta estrellas del conocimiento en tiempo limitado</p>
+                </div>
+                <div class="game-card" data-game="tagBuilder">
+                    <div class="game-icon">🏗️</div>
+                    <h3>Constructor Galáctico</h3>
+                    <p>Construye estructuras HTML correctas en el espacio</p>
+                </div>
+                <div class="game-card" data-game="cssRacer">
+                    <div class="game-icon">🏎️</div>
+                    <h3>Carrera CSS</h3>
+                    <p>Completa selectores CSS para hacer avanzar tu nave</p>
+                </div>
+                <div class="game-card" data-game="debugMission">
+                    <div class="game-icon">🔧</div>
+                    <h3>Misión Debug</h3>
+                    <p>Encuentra y corrige errores en código JavaScript</p>
+                </div>
+            </div>
+
+            <!-- Área de Juego Principal -->
+            <div class="game-container">
+                <div class="game-header">
+                    <h3 id="currentGameTitle">🎯 Cazador de Códigos</h3>
+                    <div class="game-stats">
+                        <span id="gameScore">Puntos: 0</span>
+                        <span id="gameTime">Tiempo: --</span>
+                        <span id="gameLevel">Nivel: 1</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startGame" class="control-btn primary">🚀 Iniciar Misión</button>
+                    <button id="pauseGame" class="control-btn">⏸️ Pausar</button>
+                    <button id="resetGame" class="control-btn">🔄 Reiniciar</button>
+                    <button id="instructionsBtn" class="control-btn">❓ Instrucciones</button>
+                </div>
+
+                <!-- Canvas Principal -->
+                <canvas id="gameCanvas" width="700" height="450"></canvas>
+
+                <!-- Área del Juego de Estrellas -->
+                <div class="star-game-area" id="starGameArea" style="display: none;">
+                    <div class="estrella" id="estrella"></div>
+                </div>
+
+                <!-- Área de Constructor HTML -->
+                <div class="builder-game-area" id="builderGameArea" style="display: none;">
+                    <div class="html-workspace">
+                        <div class="available-tags">
+                            <h4>Etiquetas Disponibles:</h4>
+                            <div class="tag-pool" id="tagPool"></div>
+                        </div>
+                        <div class="build-area">
+                            <h4>Construye tu estructura:</h4>
+                            <div class="drop-zone" id="dropZone">
+                                <p>Arrastra las etiquetas aquí</p>
+                            </div>
+                        </div>
+                        <div class="target-structure">
+                            <h4>Objetivo:</h4>
+                            <div id="targetStructure"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área de Carrera CSS -->
+                <div class="css-race-area" id="cssRaceArea" style="display: none;">
+                    <div class="race-track">
+                        <div class="css-challenge">
+                            <h4>Completa el selector CSS:</h4>
+                            <div class="css-question" id="cssQuestion"></div>
+                            <input type="text" id="cssInput" placeholder="Escribe tu respuesta aquí...">
+                            <button id="cssSubmit">Enviar 🚀</button>
+                        </div>
+                        <div class="race-progress">
+                            <div class="player-ship" id="playerShip">🚀</div>
+                            <div class="finish-line">🏁</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área de Debug -->
+                <div class="debug-area" id="debugArea" style="display: none;">
+                    <div class="code-panel">
+                        <h4>Encuentra y corrige el error:</h4>
+                        <pre id="codeToDebug"></pre>
+                        <div class="debug-options" id="debugOptions"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Instrucciones -->
+            <div class="modal" id="instructionsModal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3>📋 Instrucciones de la Misión</h3>
+                    <div id="instructionsText"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section galeria fade-in">
+            <h2>🌌 Proyectos Espaciales</h2>
+            <div class="contenedor-proyectos">
+                <div class="proyecto">
+                    <div style="width: 100%; height: 200px; background: linear-gradient(45deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; border-radius: 15px; margin-bottom: 1rem;">
+                        🚀 Landing Page
+                    </div>
+                    <h3>🚀 Landing de una Nave</h3>
+                    <p>Página de aterrizaje futurista con animaciones 3D y efectos de partículas.</p>
+                    <iframe src="/docs/Pepito Pepinillo el héroe de Froglandia (13).pdf" width="500" height="400"></iframe>
+                </div>
+                <div class="proyecto">
+                    <div style="width: 100%; height: 200px; background: linear-gradient(45deg, #f093fb, #f5576c); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; border-radius: 15px; margin-bottom: 1rem;">
+                        🌍 Blog Espacial
+                    </div>
+                    <h3>🌍 Blog del Universo</h3>
+                    <p>Plataforma de contenido sobre exploración espacial y tecnología.</p>
+                    <iframe src="/docs/Refranes Costa Rica.pdf" width="500" height="400"></iframe>
+                </div>
+                <div class="proyecto">
+                    <div style="width: 100%; height: 200px; background: linear-gradient(45deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; border-radius: 15px; margin-bottom: 1rem;">
+                        🛸 E-commerce
+                    </div>
+                    <h3>🛸 Tienda Espacial</h3>
+                    <p>E-commerce intergaláctico con carrito de compras y pasarela de pagos.</p>
+                    <iframe src="/docs/Infografía Hanzell y Gabriel (1).pdf" width="500" height="400"></iframe>
+                </div>
+            </div>
+            <p style="margin-top: 2rem; font-size: 1.2rem;">Escanea el código QR para más información:</p>
+            <div class="qr">QR Code</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>🎓 CTP de Aserrí - Especialidad Desarrollo Web 2025 🚀</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Formando los desarrolladores del futuro</p>
+    </footer>
+<script src="/script.js"></script>
+</body>
+</html>  
