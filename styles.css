@@ -1,0 +1,95 @@
+body { margin: 0;
+font-family: 'Segoe UI', sans-serif;
+background: radial-gradient(ellipse at center, #0b0f2a 0%, #000 100%); color: #fff;
+overflow-x: hidden;
+}
+
+#starfield { position: fixed; top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+}
+
+header {
+text-align: center; padding: 2rem;
+background: linear-gradient(to bottom, #14084f, #0b0f2a);
+}
+
+.logo {
+width: 320px;
+margin-bottom: 1rem;;
+}
+
+.subtitulo {
+font-size: 1.2rem; color: #ccc;
+}
+
+.galaxia, .juego, .galeria { padding: 2rem;
+text-align: center;
+}
+
+.contenedor-cards, .contenedor-proyectos { display: flex;
+flex-wrap: wrap;
+justify-content: center; gap: 1rem;
+margin-top: 1rem;
+}
+
+.card, .proyecto {
+background: rgba(255, 255, 255, 0.1); border-radius: 12px;
+padding: 1rem; width: 200px;
+transition: transform 0.3s ease;
+}
+
+.card:hover, .proyecto:hover { transform: scale(1.05);
+background: rgba(255, 255, 255, 0.2);
+}
+
+.game-section { 
+padding: 2rem; 
+text-align: center;
+background-color: rgba(255, 255, 255, 0.03);
+}
+
+#gameCanvas { background-color: black; border: 2px solid #00ffff; margin-top: 1rem;
+}
+
+.juego-area { 
+position: relative; 
+width: 300px;
+height: 300px;
+background: #1a1a40; 
+margin: 1rem auto; 
+border: 2px solid #fff; 
+border-radius: 10px;
+overflow: hidden;
+}
+
+.estrella {
+position: absolute; width: 30px; height: 30px;
+background: yellow; border-radius: 50%; display: none; cursor: pointer;
+}
+
+.controls button { 
+margin: 0.5rem; 
+padding: 0.5rem 1rem;
+background: #00ffff; 
+border: none;
+border-radius: 10px; 
+color: black;
+font-weight: bold; cursor: pointer;
+transition: background 0.3s ease;
+}
+
+.controls button:hover { background:  #00bbbb;
+}
+
+.qr {
+width: 150px; margin-top: 1rem;
+}
+
+footer {
+background-color: #14084f; text-align: center;
+padding: 1rem; color: #aaa;
+}
+
